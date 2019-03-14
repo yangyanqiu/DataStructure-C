@@ -9,26 +9,30 @@ typedef struct{
 	int stacksize;
 }SqStack;
 
-//1. The implement of stack
-//init an empty stack
+//*********************The implement of stack*********************
+//1. init an empty stack
 void InitStack(SqStack *S);
-//Insert a element
+//2. Insert a element
 void Push(SqStack *S, int elem);
-//get the top element
+//3. get the top element
 void GetTop(SqStack *S, int *elem);
-//delete the top element
+//4. delete the top element
 void Pop(SqStack *S, int *elem);
-//judge whether the stack is empty
+//4. judge whether the stack is empty
 // return 0 when is not empty, return 1 when is empty
 int StackEmpty(SqStack *S);
+int ClearStack(SqStack *S);
+int DestroyStack(SqStack *S);
 
-//2. the application of stack
-//convert decimal number to octal number
+//*******************************the application of stack****************************
+//1. convert decimal number to octal number
 void Convertion(int number);
-//func: Eliminate bracket 
+//2. func: Eliminate bracket 
 //return true when the bracket ()[] is matched
 //return false when the bracket is unmatched
 void EliminateBracket(void);
+//3. Line editor
+void LineEditor();
 
 int main()
 {
@@ -179,3 +183,32 @@ void EliminateBracket(void)
 		printf("The 8 brackets are matched!\n");
 }
 
+void LineEditor()
+{
+	SqStack line;
+	int top;
+	char ch;
+
+	InitStack(&line);
+
+	ch = getchar();
+	while(ch != EOF)
+	{
+		while(ch != EOF && ch != '\n')
+		{
+			switch(ch)
+			{
+				case '#': Pop(&line, &top);
+				case '@': ClearStack(&line);
+				default: Push(&line, ch);
+			}
+			ch = getchar();
+
+		}
+
+		//complete this line...
+		ClearStack(&line);
+		if(ch != EOF) ch = getchar();
+	}
+	DestroyStack(&line);
+}
