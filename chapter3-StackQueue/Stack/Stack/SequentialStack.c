@@ -18,11 +18,13 @@ void Push(SqStack *S, int elem);
 void GetTop(SqStack *S, int *elem);
 //4. delete the top element
 void Pop(SqStack *S, int *elem);
-//4. judge whether the stack is empty
+//5. judge whether the stack is empty
 // return 0 when is not empty, return 1 when is empty
 int StackEmpty(SqStack *S);
-int ClearStack(SqStack *S);
-int DestroyStack(SqStack *S);
+//6. Clear the stack
+void ClearStack(SqStack *S);
+//7. DestroyStack
+void DestroyStack(SqStack *S);
 
 //*******************************the application of stack****************************
 //1. convert decimal number to octal number
@@ -106,6 +108,17 @@ int StackEmpty(SqStack *S)
 	if(S->top == S->base) return 1;
 
 	return 0;
+}
+
+void ClearStack(SqStack *)
+{
+
+	printf("....");
+}
+
+void DestroyStack(SqStack *S)
+{
+	printf(".....");
 }
 
 void Convertion(int number)
