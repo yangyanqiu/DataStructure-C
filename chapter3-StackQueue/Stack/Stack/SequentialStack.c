@@ -16,6 +16,7 @@ void InitStack(SqStack *S);
 void Push(SqStack *S, int elem);
 //3. get the top element
 void GetTop(SqStack *S, int *elem);
+//int GetTop(SqStack *S);
 //4. delete the top element
 void Pop(SqStack *S, int *elem);
 //5. judge whether the stack is empty
@@ -35,6 +36,11 @@ void Convertion(int number);
 void EliminateBracket(void);
 //3. Line editor
 void LineEditor();
+//4. Maze: find one road
+//....
+
+//5. calculate the value of the expression you entered
+void EvaluateExpression();
 
 int main()
 {
@@ -61,7 +67,13 @@ int main()
 	Convertion(200);
 
 	//5. bracket match
-	EliminateBracket();
+	//EliminateBracket();
+	
+	//6. line editor end of EOF
+	//LineEditor();
+
+	//7. Evaluate the value of Expression
+	EvaluateExpression();
 
 	return 0;
 }
@@ -79,7 +91,7 @@ void Push(SqStack *S, int elem)
 {
 	if ((S->top - S->base) >= S->stacksize)
 	{
-		printf("Stack is full\n");
+		//printf("Stack is full\n");
 		S->base = (int *)realloc(S->base, (S->stacksize+STACKINCREMENT)*sizeof(int));
 		if(!S->base) exit(-1);
 
@@ -91,10 +103,18 @@ void Push(SqStack *S, int elem)
 
 void GetTop(SqStack *S, int *elem)
 {
-	if(S->base == S->top) exit(-1);
+	if(S->base == S->top) return -1;
 
 	*elem = *(S->top-1);
 }
+
+/*
+int GetTop(SqStack *S)
+{
+	if(S->base == S->top) -1;
+
+	return *(S->top);
+}*/
 
 void Pop(SqStack *S, int * elem)
 {
@@ -110,15 +130,17 @@ int StackEmpty(SqStack *S)
 	return 0;
 }
 
-void ClearStack(SqStack *)
+void ClearStack(SqStack *S)
 {
-
-	printf("....");
+	S->top = S->base;
+	//if (S->top == S->base)   printf("Clear stack.\n");
 }
 
 void DestroyStack(SqStack *S)
 {
-	printf(".....");
+	free(S->base);
+	S->base = S->top = NULL;
+	//printf("Destroy stack.\n");
 }
 
 void Convertion(int number)
@@ -221,7 +243,139 @@ void LineEditor()
 
 		//complete this line...
 		ClearStack(&line);
+		/*
+		int isEmp = StackEmpty(&line);
+		while(!isEmp)
+	       	{
+			Pop(&line, &top);
+			printf("%d", top);
+		}
+		*/
+		
 		if(ch != EOF) ch = getchar();
 	}
 	DestroyStack(&line);
+}
+
+int IsOperator(char o)
+{
+	int i = o;
+
+	if ((i-48) >= 0 && (i-48) <= 9) return 0;
+	else return 1;
+	
+}
+
+char ComparePriority(char prev, char next)
+{
+	if(prev == '+' || prev == '-')
+	{
+		if(next == '+' || next == '-' || next == ')' || next == '#') return '>';
+		else if(next == '*' || next == '/' || next == '(') return '<';
+
+	}else if(prev == '*' || prev == '/')
+	{
+		if(next == '+' || next == '-' || next == '*' || next == '/' || next == ')' || next == '#') return '>';
+		else if(next == '(') return '<';
+	}else if(prev == '(')
+	{
+		if(next == '+' || next == '-' || next == '*' || next == '/' || next == '(') return '<';
+		else if(next == ')') return '=';
+		else if(next == '#'){ printf("(# is illegal.\n"); exit(-1);}
+	}else if(prev == ')')
+	{
+		if(next == '+' || next == '-' || next == '*' || next == '/' || next == ')' || next == '#') return '>';
+		else if(next == '#'){ printf("((# is illegal.\n"); exit(-1);}
+	}else if(prev == '#')
+	{
+		if(next == '+' || next == '-' || next == '*' || next == '/' || next == '(') return '<';
+		else if(prev == '#') return '=';
+		else if(next == '#'){ printf("(# is illegal.\n"); exit(-1);}
+	}
+}
+
+int Operate(char n1, char op, char n2)
+{
+	int result;
+	int num1 = n1, num2 = n2;
+	//int num1 = (int)n1 - 48, num2 = (int)n2 - 48;
+
+	switch(op)
+	{
+		case '*':
+			result = num1*num2;
+			break;
+		case '/':
+			if(num2 == 0)
+			{
+				printf("**/0 is illegal.\n");
+				exit(-1);
+			}
+
+			result = num1/num2;
+			break;
+		case '-':
+			result = num1 - num2;
+			break;
+		case '+':
+			result = num1+num2;
+			break;
+	}
+
+	return result;
+}
+
+
+void EvaluateExpression()
+{
+	SqStack operator,operand;
+	char ch, tmp;
+	int top;
+	int num1, num2, result;
+
+	InitStack(&operator);
+	InitStack(&operand);
+	Push(&operator, '#');
+
+	ch = getchar();
+	GetTop(&operator, &top);
+
+	while(ch != '#' || top != '#')
+	{
+		//printf("char %c\t", ch);
+		if (ch == ' ') ch = getchar();
+
+		if(!IsOperator(ch))
+		{
+			Push(&operand, (int)ch - 48);
+			ch = getchar();
+			//printf("----: %c\n", ch);
+			
+		}else
+		{
+			switch(ComparePriority((char)top, ch))  //compare the prioty of operator
+			{
+				case '<':
+					Push(&operator, ch);
+					ch = getchar();
+					break;
+				case '=':
+					Pop(&operator, &tmp);
+					ch = getchar();
+					break;
+				case '>':
+					Pop(&operand, &num2);
+					Pop(&operand, &num1);
+					Pop(&operator, &top);
+					result = Operate(num1, top, num2);
+					Push(&operand, result);
+					break;
+			}
+		}
+		GetTop(&operator, &top);
+	}
+
+	//int result;
+	Pop(&operand, &result);
+	printf("The result is %d\n", result);
 }
