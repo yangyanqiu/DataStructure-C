@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<time.h>
 
 typedef struct QNode{
 	int data;
@@ -38,8 +39,8 @@ int main()
 	QueueTraverse(q1);
 	printf("Queue Length: %d\n", QueueLength(q1));
 	DestroyQueue(&q1);
-	QueueTraverse(q1);
-
+	//QueueTraverse(q1);
+	
 	return 0;
 }
 
@@ -126,3 +127,4 @@ void DestroyQueue(LinkQueue *Q)
 		Q->front = Q->rear;
 	}
 }
+
