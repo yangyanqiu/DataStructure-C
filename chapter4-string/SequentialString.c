@@ -1,17 +1,20 @@
 #include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
 
-#define MAXSIZE 15
-typedef unsigned char String[MAXSIZE+1];
+#define MAXSIZE 100
+typedef unsigned char SString[MAXSIZE+1];
 
-void Concat(String T, String s1, String s2);
-void SubString(String T, String s, int pos, int len);
+void Concat(SString T, SString s1, SString s2);
+void SubSString(SString T, SString s, int pos, int len);
+int Index(SString S, SString T, int pos);
 
 
 int main()
 {
-	String t = "";
-	String s1 = "ranyixu yangyan i love you"; // out of range, how to handle??
-	String s2 =  "lalala~";
+	SString t = "";
+	SString s1 = "ranyixu yangyan i love you"; // out of range, how to handle??
+	SString s2 =  "lalala~";
 
 	Concat(t, s1, s2);
 
@@ -19,17 +22,23 @@ int main()
 	printf("string2: %s, length:%d\n", s2, strlen(s2));
 	printf("new string: %s, length:%d, sizeof:%d\n", t, strlen(t), sizeof(t));
 
-	String t1;
-	SubString(t1, s1, 15, 3);
+	SString t1;
+	SubSString(t1, s1, 15, 3);
 	printf("Substring:%s\n",t1);
 	
 	char test[] = "abc";
 	printf("strlen:%d\tsizeof:%d\n",strlen(test), sizeof(test));
 
+	SString s3 = "i and love the love";
+	SString s4 = "";
+	int pos;
+	pos = Index(s3, s4, 3);
+	printf("S1:%s, S2:%s, pos:%d, Index:%d\n", s3, s4, 3, pos);
+
 	return 0;
 }
 
-void Concat(String T, String s1, String s2)
+void Concat(SString T, SString s1, SString s2)
 {
 	int len1 = strlen(s1);	
 	int len2 = strlen(s2);
@@ -68,7 +77,7 @@ void Concat(String T, String s1, String s2)
 	}
 }
 
-void SubString(String T, String s, int pos, int len)
+void SubSString(SString T, SString s, int pos, int len)
 {
 	int len1 = strlen(s);
 
@@ -84,4 +93,32 @@ void SubString(String T, String s, int pos, int len)
 	}
 	T[len] = '\0';
 
+}
+
+int Index(SString S, SString T, int pos)
+{
+	int len1 = strlen(S);
+	int len2 = strlen(T);
+
+	if(len2 == 0)
+	{
+		printf("Substring is null.\n");
+		return 0;
+	}
+	int i = pos -1;
+	int j = 0;
+	while( i < len1 && j < len2)
+	{
+		if(S[i] == T[j])
+		{
+			i++;
+			j++;
+		}else{
+			i = i -j + 1;
+			j = 0;
+		}
+	}
+
+	if(j == len2) return i-len2 + 1;
+	else return 0;
 }
