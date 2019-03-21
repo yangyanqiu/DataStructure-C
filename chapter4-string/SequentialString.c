@@ -72,7 +72,7 @@ void SubString(String T, String s, int pos, int len)
 {
 	int len1 = strlen(s);
 
-	if(pos < 1 || pos > len1 || len <= 0 || len > len1 - pos + 1) 
+	if(pos < 1 || pos > len1 || len < 0 || len > len1 - pos + 1) 
 	{
 		printf("out of string range.\n");
 		exit(-1);
