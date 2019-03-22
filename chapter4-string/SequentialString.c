@@ -8,6 +8,7 @@ typedef unsigned char SString[MAXSIZE+1];
 void Concat(SString T, SString s1, SString s2);
 void SubSString(SString T, SString s, int pos, int len);
 int Index(SString S, SString T, int pos);
+int Index_KMP(SString S, SString T, int pos, int next[]);
 
 
 int main()
@@ -29,11 +30,18 @@ int main()
 	char test[] = "abc";
 	printf("strlen:%d\tsizeof:%d\n",strlen(test), sizeof(test));
 
-	SString s3 = "i and love the love";
-	SString s4 = "";
+	SString s3 = "i and love ab abc the abaabcalove";
+	SString s4 = "abaabc";
 	int pos;
 	pos = Index(s3, s4, 3);
 	printf("S1:%s, S2:%s, pos:%d, Index:%d\n", s3, s4, 3, pos);
+
+	int next[6];
+	Get_Next(s4, next);
+	//for(int i = 0; i < 6; i++) printf("next: %d\t", next[i]);
+	pos = Index_KMP(s3, s4, 3, next);
+	printf("S1:%s, S2:%s, pos:%d, KMP_Index:%d\n", s3, s4, 3, pos);
+
 
 	return 0;
 }
@@ -121,4 +129,52 @@ int Index(SString S, SString T, int pos)
 
 	if(j == len2) return i-len2 + 1;
 	else return 0;
+}
+
+void Get_Next(SString T, int next[])
+{
+	int i = 0;
+	next[0] = -1;
+	int j = -1;
+	int len = strlen(T);
+
+	while(i<len - 1)
+	{
+		if(j == -1 || T[i] == T[j])
+		{
+			i++;
+			j++;
+			next[i] = j;
+		}else j = next[j];
+	}
+}
+
+int Index_KMP(SString S, SString T, int pos, int next[])
+{
+
+	int len1 = strlen(S);
+	int len2 = strlen(T);
+
+	if(len2 == 0)
+	{
+		printf("Substring is null.\n");
+		return 0;
+	}
+	int i = pos -1;
+	int j = 0;
+
+	while(i < len1 && j < len2)
+	{
+		if(j == -1 || S[i] == T[j])
+		{
+			++i;
+			++j;
+		}else{
+			j=next[j];
+		}
+	}
+
+	if(j >= len2) return i-len2+1;
+
+	return 0;
 }
